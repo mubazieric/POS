@@ -66,7 +66,7 @@ To wipe and reload the demo later, run `npm run reset-demo` from a Railway shell
 
 With Docker: `docker compose up --build` then open http://localhost:3000.
 
-Without Docker (needs Node 20+ and PostgreSQL):
+Without Docker (needs Node 20.19+ or 22.12+ and PostgreSQL):
 
 ```bash
 cp .env.example .env          # edit DATABASE_URL
