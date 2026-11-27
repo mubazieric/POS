@@ -1,0 +1,15 @@
+# Local run with one command: docker compose up --build  →  http://localhost:3000
+services:
+  db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: iwatpos }
+    volumes: [pgdata:/var/lib/postgresql/data]
+  app:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/iwatpos
+      JWT_SECRET: local-dev-secret
+      APP_TZ: Africa/Kampala
+    depends_on: [db]
+volumes: { pgdata: {} }
