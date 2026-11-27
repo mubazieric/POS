@@ -204,7 +204,7 @@ export default function POS() {
                   <ScanBarcode className="absolute right-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-steel-300" />
                 </div>
                 <div className="flex gap-2 overflow-x-auto scroll-thin pb-1 -mx-1 px-1">
-                  <CatChip active={cat === 'all'} onClick={() => setCat('all')} color="#0E2240" icon="✦" label="All" count={catalog.products.length} />
+                  <CatChip active={cat === 'all'} onClick={() => setCat('all')} color="#1F1D1B" icon="✦" label="All" count={catalog.products.length} />
                   {catalog.categories.map((c) => (
                     <CatChip key={c.id} active={cat === c.id} onClick={() => setCat(c.id)} color={c.color} icon={c.icon} label={c.name}
                       count={catalog.products.filter((p) => p.category_id === c.id).length} />
@@ -214,7 +214,7 @@ export default function POS() {
               <div className="flex-1 overflow-y-auto scroll-thin px-3 sm:px-5 pb-28 lg:pb-6">
                 {products.length ? (
                   <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
-                    {products.map((p) => <ProductCard key={p.id} p={p} color={catColor[p.category_id] || '#2357D9'} onAdd={() => add(p)}
+                    {products.map((p) => <ProductCard key={p.id} p={p} color={catColor[p.category_id] || '#F26A1B'} onAdd={() => add(p)}
                       inCart={ticket.lines.filter((l) => l.product_id === p.id).reduce((s, l) => s + l.qty, 0)} />)}
                   </motion.div>
                 ) : (
@@ -333,7 +333,7 @@ function TicketPanel({ ticket, totals: t, tenant, hasTables, bumpKey, onType, on
         ) : (
           <AnimatePresence initial={false}>
             {ticket.lines.map((l) => (
-              <motion.div key={l.key} layout initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0, backgroundColor: bumpKey === l.product_id ? '#EEF3FE' : '#ffffff' }} exit={{ opacity: 0, x: -24, height: 0 }}
+              <motion.div key={l.key} layout initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0, backgroundColor: bumpKey === l.product_id ? '#FFF5ED' : '#ffffff' }} exit={{ opacity: 0, x: -24, height: 0 }}
                 className="flex items-center gap-3 rounded-xl px-2.5 py-2">
                 <span className="h-10 w-10 shrink-0 rounded-lg bg-steel-100 grid place-items-center text-xl">{l.emoji}</span>
                 <div className="min-w-0 flex-1">

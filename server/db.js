@@ -11,6 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // NUMERIC comes back as string by default; POS math wants numbers.
 pg.types.setTypeParser(1700, (v) => (v === null ? null : parseFloat(v)));
+pg.types.setTypeParser(1082, (v) => v); // DATE stays 'YYYY-MM-DD', no time-zone shift
 pg.types.setTypeParser(20, (v) => (v === null ? null : parseInt(v, 10)));
 
 const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/iwatpos';

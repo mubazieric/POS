@@ -68,7 +68,7 @@ r.get('/products', h(async (req, res) => {
     WHERE p.tenant_id=$1 ORDER BY p.active DESC, p.name`, [req.user.tid]));
 }));
 
-const PRODUCT_FIELDS = ['category_id', 'name', 'sku', 'barcode', 'price', 'cost', 'emoji', 'description', 'track_stock', 'stock', 'low_stock', 'to_kitchen', 'active'];
+const PRODUCT_FIELDS = ['category_id', 'name', 'sku', 'barcode', 'price', 'cost', 'emoji', 'description', 'track_stock', 'stock', 'low_stock', 'to_kitchen', 'active', 'on_menu'];
 const pickFields = (body, fields) => fields.filter((f) => body[f] !== undefined).map((f) => [f, body[f] === '' ? null : body[f]]);
 
 r.post('/products', h(async (req, res) => {
@@ -217,7 +217,7 @@ r.get('/settings', h(async (req, res) => {
     FROM tenants t JOIN plans p ON p.code=t.plan_code WHERE t.id=$1`, [req.user.tid]));
 }));
 r.patch('/settings', requireRole('owner'), h(async (req, res) => {
-  const f = pickFields(req.body || {}, ['name', 'currency', 'tax_rate', 'tax_inclusive', 'phone', 'email', 'address', 'city', 'country', 'receipt_footer', 'accent']);
+  const f = pickFields(req.body || {}, ['name', 'currency', 'tax_rate', 'tax_inclusive', 'phone', 'email', 'address', 'city', 'country', 'receipt_footer', 'accent', 'menu_enabled', 'menu_message']);
   if (!f.length) return res.json({});
   res.json(await one(`UPDATE tenants SET ${f.map(([k], i) => `${k}=$${i + 2}`).join(',')} WHERE id=$1 RETURNING *`, [req.user.tid, ...f.map(([, v]) => v)]));
 }));

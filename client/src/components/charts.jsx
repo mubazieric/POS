@@ -1,8 +1,8 @@
 import { money } from '../lib/format.js';
 
-export const AXIS = { stroke: '#97A3B5', fontSize: 11, tickLine: false, axisLine: false };
-export const GRID = { stroke: '#E1E6EE', strokeDasharray: '3 4', vertical: false };
-export const PALETTE = ['#2357D9', '#5480E6', '#0E2240', '#87A8F1', '#6A788D', '#B7CCF8', '#3A4556', '#C9D1DD'];
+export const AXIS = { stroke: '#A19D98', fontSize: 11, tickLine: false, axisLine: false };
+export const GRID = { stroke: '#E4E2DF', strokeDasharray: '3 4', vertical: false };
+export const PALETTE = ['#F26A1B', '#FA8638', '#1F1D1B', '#FDAA70', '#75716C', '#FFCDA8', '#403D3A', '#CFCCC8'];
 
 export function ChartTip({ active, payload, label, fmt = (v) => money(v), labelFmt = (l) => l }) {
   if (!active || !payload?.length) return null;

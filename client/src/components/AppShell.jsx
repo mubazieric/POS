@@ -13,10 +13,10 @@ function Nav({ items, onNavigate }) {
     <nav className="flex flex-col gap-0.5">
       {items.map((it) =>
         it.section ? (
-          <div key={it.section} className="px-3 pt-5 pb-1.5 text-[11px] font-semibold text-steel-400/80">{it.section}</div>
+          <div key={it.section} className="px-3 pt-4 pb-1 text-[11px] font-bold text-brand-300/80">{it.section}</div>
         ) : (
           <NavLink key={it.to} to={it.to} end={it.end} onClick={onNavigate}
-            className={({ isActive }) => cx('relative flex items-center gap-3 h-10 px-3 rounded-lg text-[14px] font-semibold transition-colors',
+            className={({ isActive }) => cx('relative flex items-center gap-3 h-9 px-3 rounded-lg text-[13.5px] font-semibold transition-colors',
               isActive ? 'text-white' : 'text-steel-300 hover:text-white hover:bg-white/5')}>
             {({ isActive }) => (
               <>

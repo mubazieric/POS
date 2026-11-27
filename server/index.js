@@ -6,11 +6,13 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { migrate, pool } from './db.js';
-import { seedIfEmpty } from './seed.js';
+import { seedIfEmpty, seedV2 } from './seed.js';
 import authRoutes from './routes/auth.js';
 import posRoutes from './routes/pos.js';
 import adminRoutes from './routes/admin.js';
 import superRoutes from './routes/super.js';
+import opsRoutes from './routes/ops.js';
+import publicRoutes from './routes/public.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -27,6 +29,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/pos', posRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/super', superRoutes);
+app.use('/api/ops', opsRoutes);
+app.use('/api/public', publicRoutes);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Unknown API route.' }));
 
 // Serve the built web app. The service worker must never be cached by the browser.
@@ -53,6 +57,6 @@ const port = process.env.PORT || 3000;
       await new Promise((r) => setTimeout(r, 3000));
     }
   }
-  if (process.env.SEED_DEMO !== 'false') await seedIfEmpty();
+  if (process.env.SEED_DEMO !== 'false') { await seedIfEmpty(); await seedV2(); }
   app.listen(port, () => console.log(`IWAT POS running on :${port}`));
 })();

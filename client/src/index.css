@@ -37,3 +37,9 @@
   #print-receipt, #print-receipt * { visibility: visible; }
   #print-receipt { position: absolute; left: 0; top: 0; width: 80mm; box-shadow: none !important; }
 }
+
+@media print {
+  #print-sheet, #print-sheet * { visibility: visible; }
+  #print-sheet { position: absolute; left: 0; top: 0; width: 100%; }
+  .qr-card { break-inside: avoid; }
+}

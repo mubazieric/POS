@@ -5,7 +5,7 @@ import { money, num } from '../../lib/format.js';
 import { PageHeader, Button, Modal, Field, Input, Select, Badge, Table, Segmented, Spinner, Empty, useToast, cx } from '../../components/ui.jsx';
 
 const EMOJI = ['☕', '🍵', '🥛', '🧋', '🌯', '🍳', '🥞', '🥑', '🍲', '🍛', '🐟', '🍔', '🍕', '🍗', '🍝', '🥗', '🍟', '🌮', '🍜', '🍣', '🥩', '🍖', '🧃', '🥭', '🥤', '💧', '🍺', '🍷', '🍸', '🍰', '🍨', '🍉', '🍌', '🥐', '🥟', '🍩', '🍞', '🧁', '🍪', '🛍️', '🧴', '📦'];
-const COLORS = ['#2357D9', '#0E2240', '#0E9F8E', '#12A971', '#D97A1E', '#C2417A', '#6B4E3D', '#9A6B2F', '#6A788D', '#7C3AED'];
+const COLORS = ['#F26A1B', '#1F1D1B', '#0E9F8E', '#12A971', '#D97A1E', '#C2417A', '#6B4E3D', '#9A6B2F', '#75716C', '#7C3AED'];
 const blank = { name: '', category_id: '', price: '', cost: '', emoji: '🍽️', sku: '', barcode: '', stock: 0, low_stock: 5, track_stock: true, to_kitchen: true, description: '' };
 
 export default function Products() {
@@ -85,7 +85,7 @@ export default function Products() {
             columns={[
               { key: 'name', label: 'Product', render: (p) => (
                 <div className="flex items-center gap-3">
-                  <span className="h-10 w-10 rounded-lg grid place-items-center text-xl" style={{ background: (p.category_color || '#2357D9') + '18' }}>{p.emoji}</span>
+                  <span className="h-10 w-10 rounded-lg grid place-items-center text-xl" style={{ background: (p.category_color || '#F26A1B') + '18' }}>{p.emoji}</span>
                   <div><div className="font-bold text-steel-900">{p.name}</div><div className="text-xs text-steel-500">{p.sku || 'No SKU'}</div></div>
                 </div>) },
               { key: 'category', label: 'Category', render: (p) => p.category_name ? <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-steel-700"><span className="h-2 w-2 rounded-full" style={{ background: p.category_color }} />{p.category_name}</span> : <span className="text-steel-400">None</span> },

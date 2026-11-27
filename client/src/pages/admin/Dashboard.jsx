@@ -2,15 +2,23 @@ import { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
-import { AlertTriangle, CloudOff, MonitorSmartphone, PackageOpen } from 'lucide-react';
+import { AlertTriangle, CloudOff, MonitorSmartphone, PackageOpen, TrendingUp, Boxes, ShoppingCart, Landmark, Settings2, QrCode } from 'lucide-react';
 import { api } from '../../lib/api.js';
 import { money, num, time, METHOD_LABEL, TYPE_LABEL, ago } from '../../lib/format.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { PageHeader, Segmented, Spinner, Delta, Badge, Button, cx, Empty } from '../../components/ui.jsx';
 import { AXIS, GRID, ChartTip, PALETTE, shortDay, longDay } from '../../components/charts.jsx';
 
+const PORTALS = [
+  { to: '/admin/sales', label: 'Sales', note: 'Reports and orders', icon: TrendingUp },
+  { to: '/admin/inventory', label: 'Inventory', note: 'Stock and reorders', icon: Boxes },
+  { to: '/admin/purchases', label: 'Purchases', note: 'Suppliers and POs', icon: ShoppingCart },
+  { to: '/admin/accounting', label: 'Accounting', note: 'Profit, VAT, expenses', icon: Landmark },
+  { to: '/admin/qr-menu', label: 'QR menu', note: 'Table codes', icon: QrCode },
+  { to: '/admin/settings', label: 'Admin', note: 'Team and settings', icon: Settings2 },
+];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const METHOD_COLOR = { cash: '#12A971', mtn_momo: '#E8A317', airtel_money: '#D64545', card: '#2357D9', bank: '#6A788D' };
+const METHOD_COLOR = { cash: '#12A971', mtn_momo: '#FFC20E', airtel_money: '#D64545', card: '#1F1D1B', bank: '#75716C' };
 
 function Kpi({ label, value, delta, i }) {
   return (
@@ -37,7 +45,7 @@ function Heatmap({ data }) {
             {hours.map((h) => {
               const v = map[`${d}-${h}`] || 0;
               const a = v / max;
-              return <span key={`${d}-${h}`} title={`${DAYS[d]} ${h}:00, ${v} orders`} className="h-6 rounded-[5px]" style={{ background: v ? `rgba(35,87,217,${0.08 + a * 0.92})` : '#EDF0F5' }} />;
+              return <span key={`${d}-${h}`} title={`${DAYS[d]} ${h}:00, ${v} orders`} className="h-6 rounded-[5px]" style={{ background: v ? `rgba(242,106,27,${0.08 + a * 0.92})` : '#F0EFED' }} />;
             })}
           </Fragment>
         ))}
@@ -74,6 +82,19 @@ export default function Dashboard() {
         </>}
       />
 
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-5">
+        {PORTALS.map((p, i) => (
+          <Link key={p.to} to={p.to}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} whileHover={{ y: -3 }}
+              className="group rounded-xl bg-white shadow-card hover:shadow-lift transition-shadow p-3.5 h-full">
+              <span className="h-10 w-10 rounded-lg grid place-items-center bg-brand-50 text-brand-600 group-hover:bg-brand-500 group-hover:text-white transition-colors"><p.icon className="h-5 w-5" /></span>
+              <div className="text-[13px] font-bold text-steel-900 mt-2.5">{p.label}</div>
+              <div className="text-[11px] text-steel-500 leading-snug hidden sm:block">{p.note}</div>
+            </motion.div>
+          </Link>
+        ))}
+      </div>
+
       {/* Revenue: the main read of the page */}
       <section className="card overflow-hidden">
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-steel-100 border-b border-steel-100">
@@ -86,13 +107,13 @@ export default function Dashboard() {
           <ResponsiveContainer>
             <AreaChart data={d.daily} margin={{ left: 8, right: 16 }}>
               <defs>
-                <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2357D9" stopOpacity={0.28} /><stop offset="100%" stopColor="#2357D9" stopOpacity={0} /></linearGradient>
+                <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F26A1B" stopOpacity={0.28} /><stop offset="100%" stopColor="#F26A1B" stopOpacity={0} /></linearGradient>
               </defs>
               <CartesianGrid {...GRID} />
               <XAxis dataKey="day" {...AXIS} tickFormatter={shortDay} minTickGap={24} />
               <YAxis {...AXIS} tickFormatter={(v) => money(v, { compact: true, symbol: false })} width={48} />
-              <Tooltip content={<ChartTip labelFmt={longDay} fmt={(v, key) => (key === 'orders' ? num(v) : money(v))} />} cursor={{ stroke: '#87A8F1', strokeDasharray: '4 4' }} />
-              <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#2357D9" strokeWidth={2.5} fill="url(#rev)" animationDuration={900} activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }} />
+              <Tooltip content={<ChartTip labelFmt={longDay} fmt={(v, key) => (key === 'orders' ? num(v) : money(v))} />} cursor={{ stroke: '#FDAA70', strokeDasharray: '4 4' }} />
+              <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#F26A1B" strokeWidth={2.5} fill="url(#rev)" animationDuration={900} activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -207,8 +228,8 @@ export default function Dashboard() {
               <BarChart data={d.staff} layout="vertical" margin={{ left: 0, right: 8 }}>
                 <XAxis type="number" hide />
                 <YAxis type="category" dataKey="name" {...AXIS} width={92} tickFormatter={(n) => n.split(' ')[0]} />
-                <Tooltip content={<ChartTip />} cursor={{ fill: '#EEF3FE' }} />
-                <Bar dataKey="revenue" name="Sales" fill="#2357D9" radius={[0, 6, 6, 0]} barSize={18} animationDuration={800} />
+                <Tooltip content={<ChartTip />} cursor={{ fill: '#FFF5ED' }} />
+                <Bar dataKey="revenue" name="Sales" fill="#F26A1B" radius={[0, 6, 6, 0]} barSize={18} animationDuration={800} />
               </BarChart>
             </ResponsiveContainer>
           </div>

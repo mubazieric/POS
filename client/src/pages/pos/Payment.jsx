@@ -7,9 +7,9 @@ import Receipt from './Receipt.jsx';
 
 const METHODS = [
   { id: 'cash', icon: Banknote, color: '#12A971' },
-  { id: 'mtn_momo', icon: Smartphone, color: '#E8A317' },
+  { id: 'mtn_momo', icon: Smartphone, color: '#D9A400' },
   { id: 'airtel_money', icon: Smartphone, color: '#D64545' },
-  { id: 'card', icon: CreditCard, color: '#2357D9' },
+  { id: 'card', icon: CreditCard, color: '#1F1D1B' },
 ];
 
 function quickCash(due) {

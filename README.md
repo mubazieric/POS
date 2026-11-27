@@ -12,7 +12,13 @@ One codebase runs as a website and as an installable app on Android, iPhone, iPa
 | Register `/pos` | Cashiers | Product grid, barcode search, several open orders, dine-in / takeaway / delivery, customers & loyalty, discounts, notes, split payments (cash, MTN MoMo, Airtel Money, card), printable receipts, PIN staff switch |
 | Floor plan | Waiters | Live table status: free, order in progress, cooking, food ready |
 | Kitchen display `/kitchen` | Kitchen | New → Cooking → Ready columns, new-ticket chime, late-order warnings |
-| Business dashboard `/admin` | Owners, managers | Revenue, profit, busiest hours heatmap, payment mix, best sellers, low stock, team performance; menu & stock, orders & refunds, CSV export, customers, team, settings, drag-and-drop floor editor |
+| Business dashboard `/admin` | Owners, managers | Revenue, profit, busiest hours heatmap, payment mix, best sellers, low stock, team performance, portal launcher |
+| Sales portal | Owners, managers | Sales report by product, category, cashier, hour, payment method and order type; margins; orders & refunds; customers & loyalty; CSV export |
+| Inventory portal | Owners, managers | Stock value at cost and retail, reorder suggestions that turn into purchase orders, full stock-movement ledger, guided stock count |
+| Purchases portal | Owners, managers | Suppliers with balances owed, purchase orders (draft → ordered → received), receiving updates stock with weighted-average cost, supplier payments |
+| Accounting portal | Owners, managers | Profit & loss, VAT payable (output less input), cash in/out by method, six-month trend, expenses, double-entry journal and trial balance, CSV exports |
+| Admin portal | Owners | Team & PINs, QR menu, activity log, business settings, floor-plan editor, devices, plan |
+| QR menu `/m/<business>` | Guests | Scan the table code to see the live menu on any phone: categories, search, popular items, sold-out labels, a “my choices” list to show the waiter |
 | Platform console `/super` | IWAT staff | Recurring revenue, sales across all businesses, create / suspend / re-plan businesses, logged support sign-in, audit log |
 
 ### How offline works
@@ -24,6 +30,10 @@ One codebase runs as a website and as an installable app on Android, iPhone, iPa
 5. The status pill in the top bar shows **Online**, **Offline**, or how many sales are waiting.
 
 Sign-in, adding new customers and staff PIN switching need a connection; selling does not.
+
+### QR table menus
+
+In **Admin → QR menu**, print one card per table (or download each code as an image). Each code opens `/m/<business>?table=<id>`, so guests see their table number. Prices and sold-out items come straight from your products; hide anything you don't want guests to see. The menu can be switched off at any time.
 
 ## Demo accounts
 

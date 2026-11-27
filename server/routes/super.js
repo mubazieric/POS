@@ -55,7 +55,7 @@ r.post('/tenants', h(async (req, res) => {
         [name, slug, industry, plan_code, status, city])).rows[0];
       await c.query(`INSERT INTO users (tenant_id, name, email, password_hash, pin, role) VALUES ($1,$2,$3,$4,'1111','owner')`,
         [t.id, owner_name || `${name} Owner`, owner_email.toLowerCase(), bcrypt.hashSync(owner_password, 10)]);
-      await c.query(`INSERT INTO categories (tenant_id, name, color, icon) VALUES ($1,'General','#2357D9','🛍️')`, [t.id]);
+      await c.query(`INSERT INTO categories (tenant_id, name, color, icon) VALUES ($1,'General','#F26A1B','🛍️')`, [t.id]);
       await c.query(`INSERT INTO audit_log (user_id, action, detail) VALUES ($1,'tenant.create',$2)`, [req.user.uid, JSON.stringify({ tenant: t.id, name })]);
       return t;
     });

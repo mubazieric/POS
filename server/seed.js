@@ -11,7 +11,7 @@ const PLANS = [
 const CATEGORIES = [
   ['Coffee & Tea', '#6B4E3D', '☕'],
   ['Breakfast', '#D97A1E', '🍳'],
-  ['Mains', '#2357D9', '🍛'],
+  ['Mains', '#F26A1B', '🍛'],
   ['Drinks', '#0E9F8E', '🥤'],
   ['Desserts', '#C2417A', '🍰'],
   ['Bakery', '#9A6B2F', '🥐'],
@@ -207,7 +207,7 @@ export async function seedIfEmpty() {
       const t = await createTenant(c, { name, slug, industry, plan, status, city, createdDaysAgo: 70 + i * 32 });
       const u = await c.query(`INSERT INTO users (tenant_id, name, email, password_hash, pin, role) VALUES ($1,$2,$3,$4,'1111','owner') RETURNING id`,
         [t.id, `${name} Owner`, `owner@${slug}.ug`, hash('Owner@123')]);
-      const cat = await c.query(`INSERT INTO categories (tenant_id, name, color, icon) VALUES ($1,'General','#2357D9','🛍️') RETURNING id`, [t.id]);
+      const cat = await c.query(`INSERT INTO categories (tenant_id, name, color, icon) VALUES ($1,'General','#F26A1B','🛍️') RETURNING id`, [t.id]);
       const ps = [];
       for (const [, n, price, cost, emoji, stock] of PRODUCTS.slice(i * 4, i * 4 + 6)) {
         const r = await c.query(`INSERT INTO products (tenant_id, category_id, name, price, cost, emoji, stock) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, name, price, cost`,
@@ -221,4 +221,86 @@ export async function seedIfEmpty() {
   });
   console.log('✅ Demo data ready.');
   return true;
+}
+
+/* ---------- v2 demo data: suppliers, purchases, expenses ---------- */
+const SUPPLIERS = [
+  ['Mukwano Wholesalers', 'Sarah Nanyonga', '+256 414 200111', 14],
+  ['Owino Fresh Produce', 'Hassan Kibuuka', '+256 772 404040', 0],
+  ['Bugisu Coffee Co-op', 'Fred Wanyama', '+256 754 818181', 30],
+  ['Kampala Beverages Ltd', 'Diana Auma', '+256 312 777000', 30],
+  ['Lake Victoria Fisheries', 'John Ochieng', '+256 701 525252', 7],
+];
+const EXPENSES = [
+  ['rent', 'Monthly rent, Plot 12 Main Street', 3500000, 'bank', 'Kololo Properties', 30],
+  ['salaries', 'Staff salaries', 6200000, 'bank', 'Payroll', 30],
+  ['utilities', 'UMEME electricity', 640000, 'mtn_momo', 'UMEME', 30],
+  ['utilities', 'NWSC water', 180000, 'mtn_momo', 'NWSC', 30],
+  ['utilities', 'Internet', 250000, 'bank', 'MTN Business', 30],
+  ['transport', 'Market runs and deliveries', 85000, 'cash', 'Boda rider', 7],
+  ['supplies', 'Cleaning supplies and takeaway boxes', 120000, 'cash', 'Game Stores', 14],
+  ['marketing', 'Social media adverts', 300000, 'card', 'Meta', 30],
+];
+
+export async function seedV2() {
+  const demo = await one(`SELECT id FROM tenants WHERE slug='demo'`);
+  if (!demo) return;
+  const has = await one('SELECT count(*)::int AS n FROM suppliers WHERE tenant_id=$1', [demo.id]);
+  if (has.n > 0) return;
+  console.log('🌱 Adding purchases, suppliers and expenses demo data…');
+  await tx(async (c) => {
+    const owner = (await c.query(`SELECT id FROM users WHERE tenant_id=$1 AND role='owner' LIMIT 1`, [demo.id])).rows[0];
+    const products = (await c.query('SELECT id, name, cost, category_id FROM products WHERE tenant_id=$1 AND track_stock', [demo.id])).rows;
+    const sup = [];
+    for (const [name, contact, phone, terms] of SUPPLIERS) {
+      const r = await c.query(`INSERT INTO suppliers (tenant_id, name, contact, phone, email, terms_days, address) VALUES ($1,$2,$3,$4,$5,$6,'Kampala') RETURNING id`,
+        [demo.id, name, contact, phone, `orders@${name.toLowerCase().replace(/[^a-z]+/g, '')}.ug`, terms]);
+      sup.push(r.rows[0].id);
+    }
+    // Purchase orders across the last 75 days; the newest few are still open.
+    const count = 16;
+    for (let i = 0; i < count; i++) {
+      const daysAgo = Math.round(74 - (i * 74) / (count - 1));
+      const status = i === count - 1 ? 'draft' : i >= count - 3 ? 'ordered' : 'received';
+      const lines = [];
+      const picks = [...products].sort(() => Math.random() - 0.5).slice(0, rand(3, 6));
+      for (const p of picks) lines.push({ p, qty: rand(10, 60), cost: Math.round(p.cost * (0.95 + Math.random() * 0.1)) });
+      const subtotal = lines.reduce((s, l) => s + l.qty * l.cost, 0);
+      const tax = Math.round(subtotal * 0.18);
+      const total = subtotal + tax;
+      const paid = status !== 'received' ? 0 : i < count - 6 ? total : i % 2 ? Math.round(total / 2) : 0;
+      const po = await c.query(
+        `INSERT INTO purchase_orders (tenant_id, supplier_id, number, status, expected_on, subtotal, tax, total, paid, created_by, created_at, received_at)
+         VALUES ($1,$2,$3,$4,(now() - ($5 || ' days')::interval + interval '2 days')::date,$6,$7,$8,$9,$10, now() - ($5 || ' days')::interval,
+           CASE WHEN $4='received' THEN now() - ($5 || ' days')::interval + interval '1 day' END) RETURNING id, number, received_at`,
+        [demo.id, sup[i % sup.length], `PO-${String(i + 1).padStart(4, '0')}`, status, String(daysAgo), subtotal, tax, total, paid, owner.id]);
+      for (const l of lines) {
+        await c.query(`INSERT INTO purchase_items (po_id, product_id, name, qty, unit_cost, line_total) VALUES ($1,$2,$3,$4,$5,$6)`,
+          [po.rows[0].id, l.p.id, l.p.name, l.qty, l.cost, l.qty * l.cost]);
+        if (status === 'received') {
+          await c.query(`INSERT INTO stock_moves (tenant_id, product_id, qty, reason, ref, created_at) VALUES ($1,$2,$3,'purchase',$4,$5)`,
+            [demo.id, l.p.id, l.qty, po.rows[0].number, po.rows[0].received_at]);
+        }
+      }
+      if (paid > 0) {
+        await c.query(`INSERT INTO supplier_payments (tenant_id, po_id, amount, method, reference, paid_at) VALUES ($1,$2,$3,'bank',$4,$5)`,
+          [demo.id, po.rows[0].id, paid, `TRF${rand(100000, 999999)}`, po.rows[0].received_at]);
+      }
+    }
+    // Recurring expenses
+    for (const [cat, desc, amount, method, to, every] of EXPENSES) {
+      for (let d = 74; d >= 0; d -= every) {
+        const jitter = every >= 30 ? 1 : 0.8 + Math.random() * 0.4;
+        await c.query(`INSERT INTO expenses (tenant_id, category, description, amount, method, paid_to, spent_on, created_by) VALUES ($1,$2,$3,$4,$5,$6,(now() - ($7 || ' days')::interval)::date,$8)`,
+          [demo.id, cat, desc, Math.round(amount * jitter / 1000) * 1000, method, to, String(d), owner.id]);
+      }
+    }
+    // A few sale-side stock moves so the ledger shows both directions
+    const recent = (await c.query(`SELECT o.number, o.created_at, i.product_id, i.qty FROM orders o JOIN order_items i ON i.order_id=o.id
+      JOIN products p ON p.id=i.product_id AND p.track_stock WHERE o.tenant_id=$1 ORDER BY o.created_at DESC LIMIT 120`, [demo.id])).rows;
+    for (const r of recent) {
+      await c.query(`INSERT INTO stock_moves (tenant_id, product_id, qty, reason, ref, created_at) VALUES ($1,$2,$3,'sale',$4,$5)`, [demo.id, r.product_id, -r.qty, r.number, r.created_at]);
+    }
+  });
+  console.log('✅ Purchases and accounting demo data ready.');
 }

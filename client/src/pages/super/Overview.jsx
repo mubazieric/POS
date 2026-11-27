@@ -42,12 +42,12 @@ export default function Overview() {
           <div className="h-[280px] mt-4 -ml-2">
             <ResponsiveContainer>
               <AreaChart data={d.series}>
-                <defs><linearGradient id="gmv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2357D9" stopOpacity={0.3} /><stop offset="100%" stopColor="#2357D9" stopOpacity={0} /></linearGradient></defs>
+                <defs><linearGradient id="gmv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F26A1B" stopOpacity={0.3} /><stop offset="100%" stopColor="#F26A1B" stopOpacity={0} /></linearGradient></defs>
                 <CartesianGrid {...GRID} />
                 <XAxis dataKey="day" {...AXIS} tickFormatter={shortDay} minTickGap={24} />
                 <YAxis {...AXIS} tickFormatter={(v) => money(v, { compact: true, symbol: false })} width={48} />
                 <Tooltip content={<ChartTip labelFmt={longDay} />} />
-                <Area type="monotone" dataKey="gmv" name="Sales" stroke="#2357D9" strokeWidth={2.5} fill="url(#gmv)" animationDuration={900} />
+                <Area type="monotone" dataKey="gmv" name="Sales" stroke="#F26A1B" strokeWidth={2.5} fill="url(#gmv)" animationDuration={900} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -92,8 +92,8 @@ export default function Overview() {
                 <CartesianGrid {...GRID} />
                 <XAxis dataKey="month" {...AXIS} />
                 <YAxis {...AXIS} allowDecimals={false} width={28} />
-                <Tooltip content={<ChartTip fmt={(v) => num(v)} />} cursor={{ fill: '#EEF3FE' }} />
-                <Bar dataKey="signups" name="New businesses" fill="#2357D9" radius={[6, 6, 0, 0]} barSize={26} />
+                <Tooltip content={<ChartTip fmt={(v) => num(v)} />} cursor={{ fill: '#FFF5ED' }} />
+                <Bar dataKey="signups" name="New businesses" fill="#F26A1B" radius={[6, 6, 0, 0]} barSize={26} />
               </BarChart>
             </ResponsiveContainer>
           </div>
